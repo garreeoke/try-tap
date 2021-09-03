@@ -39,8 +39,8 @@ install_tanzu_cli "$UAA_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 ### Set up Kubernetes environment
 info "Done for now ..."
 install_k3s
-sudo env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
-sudo chmod -R 666 ~/.kube
+env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
+chmod -R 755 ~/.kube
 exit 0
 # Install kapp controller
 echo "Install kapp controller"
