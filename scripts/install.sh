@@ -27,7 +27,7 @@ install_imgpkg $IMGPKG_VERSION
 install_kbld $KBLD_VERSION
 install_jq
 install_kubectl $KUBECTL_VERSION
-install_tanzu_cli $UAA_REFRESH_TOKEN
+install_tanzu_cli $UAA_REFRESH_TOKEN $TANZU_CLI_VERSION
 
 #detect_endpoint
 #generate_passwords
