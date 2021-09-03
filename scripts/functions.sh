@@ -54,9 +54,8 @@ install_kapp () {
   info "Installing kapp $1"
   wget https://github.com/vmware-tanzu/carvel-kapp/releases/download/$1/kapp-linux-amd64
   chmod +x ./kapp-linux-amd64
-  mv ./kapp-linux/amd64 /usr/local/bin
+  mv ./kapp-linux/amd64 /usr/local/bin/kapp
   # Execute kapp command
-  # TODO error checking
   kapp -v
 }
 
@@ -96,7 +95,7 @@ install_tanzu_cli () {
   info "Installing tanzu cli"
   # Get access token
   echo "R: $1"
-  ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "{"refresh_token":$1}" | jq '.access_token')
+  ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
   echo "A: $ACCESS_TOKEN"
   wget -O tanzu-cli-bundle-linux-amd64.tar --header="Authorization: Bearer $ACCESS_TOKEN" https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1030933/download
   exit 0
@@ -104,6 +103,14 @@ install_tanzu_cli () {
   tanzu plugin clean
   tanzu plugin install -v $2 --local cli package
   tanzu package version
+}
+
+generate_token_data() {
+  cat <<EOF
+{
+  "refresh_token": "$1"
+}
+EOF
 }
 
 install_yq () {
