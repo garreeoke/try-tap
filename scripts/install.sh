@@ -50,7 +50,7 @@ kapp deploy -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/rele
 # Setup package repo
 kubectl create namespace tap-install
 kubectl create secret docker-registry tap-registry -n tap-install --docker-server='registry.pivotal.io' --docker-username=$TANZU_NET_USER --docker-password=$TANZU_NET_PASS
-kapp deploy -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml -y
+kapp deploy -y -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml
 tanzu package repository list -n tap-install
 
 echo "EXITING"
