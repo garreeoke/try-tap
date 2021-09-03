@@ -14,8 +14,8 @@ function log() {
   "KUBE") HEADER_COLOR=$ORANGE MSG_COLOR=$CYAN ;;
   "ERROR") HEADER_COLOR=$RED MSG_COLOR=$NS ;;
   esac
-  printf "${HEADER_COLOR}[%-5.5s]${NC} ${MSG_COLOR}%b${NC}" "${LEVEL}" "${MSG}"
-  printf "$(date +"%D %T") [%-5.5s] %b" "${LEVEL}" "${MSG}" >>"$OUT"
+  sudo printf "${HEADER_COLOR}[%-5.5s]${NC} ${MSG_COLOR}%b${NC}" "${LEVEL}" "${MSG}"
+  sudo printf "$(date +"%D %T") [%-5.5s] %b" "${LEVEL}" "${MSG}" >>"$OUT"
 }
 
 function info() {
