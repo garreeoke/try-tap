@@ -44,6 +44,10 @@ chmod 555 ~/.kube/config
 echo "sleeping"
 sleep 5
 echo "exiting"
+echo '' >>~/.bashrc
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl k' >>~/.bashrc
 exit 0
 # Install kapp controller
 echo "Install kapp controller"
@@ -53,11 +57,6 @@ kubectl create namespace tap-install
 kubectl create secret docker-registry tap-registry -n tap-install --docker-server='registry.pivotal.io' --docker-username=$TANZU_NET_USER --docker-password=$TANZU_NET_PASS
 kapp deploy -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml -y
 tanzu package repository list -n tap-install
-
-echo '' >>~/.bashrc
-echo 'source <(kubectl completion bash)' >>~/.bashrc
-echo 'alias k=kubectl' >>~/.bashrc
-echo 'complete -F __start_kubectl k' >>~/.bashrc
 
 echo "EXITING"
 rm -rf cli
