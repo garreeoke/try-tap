@@ -44,7 +44,7 @@ function exec_kubectl_mutating() {
 install_k3s () {
   info "--- Installing K3s ---"
   # INSTALL_K3S_EXEC="--tls-san $(cat ${BASE_DIR}/secrets/public_ip)"
-  curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
+  curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="666" sh -
   #curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.19.7+k3s1" K3S_KUBECONFIG_MODE=644 sh -
   info " --- END K3s --- "
 }

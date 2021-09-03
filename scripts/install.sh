@@ -37,11 +37,13 @@ install_tanzu_cli "$UAA_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 #create_spin_endpoint
 
 ### Set up Kubernetes environment
-info "Done for now ..."
 install_k3s
 env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
 chmod 755 ~/.kube
 chmod 555 ~/.kube/config
+echo "sleeping"
+sleep 5
+echo "exiting"
 exit 0
 # Install kapp controller
 echo "Install kapp controller"
