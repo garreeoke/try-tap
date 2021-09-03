@@ -39,6 +39,7 @@ install_tanzu_cli "$UAA_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 ### Set up Kubernetes environment
 info "Done for now ..."
 install_k3s
+exit 0
 # Install kapp controller
 echo "Install kapp controller"
 kapp deploy -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
