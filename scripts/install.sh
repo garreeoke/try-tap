@@ -16,7 +16,7 @@ UAA_REFRESH_TOKEN="593092fe98754de894f37d4bea612bc4-r" # Make an option
 TANZU_CLI_VERSION="v1.4.0-rc.5" # Make an option
 
 ### Load Helper Functions
-. "${PROJECT_DIR}/scripts/functions.sh"
+. ./scripts/functions.sh
 
 info "Running tap setup for Linux"
 
