@@ -38,9 +38,7 @@ install_tanzu_cli "$UAA_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 
 ### Set up Kubernetes environment
 install_k3s
-sudo env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
-chmod 755 ~/.kube
-chmod 555 ~/.kube/config
+env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
 echo "sleeping"
 sleep 5
 echo "exiting"
