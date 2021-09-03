@@ -55,7 +55,7 @@ install_kapp () {
   info "Installing kapp $1"
   wget https://github.com/vmware-tanzu/carvel-kapp/releases/download/$1/kapp-linux-amd64
   sudo chmod +x ./kapp-linux-amd64
-  sudo mv ./kapp-linux-amd64 /usr/local/bin/kapp
+  sudo mv -f ./kapp-linux-amd64 /usr/local/bin/kapp
   # Execute kapp command
   kapp -v
 }
@@ -64,7 +64,7 @@ install_ytt () {
   info "Installing ytt $1"
   wget https://github.com/vmware-tanzu/carvel-ytt/releases/download/$1/ytt-linux-amd64
   sudo chmod +x ./ytt-linux-amd64
-  sudo mv ./ytt-linux-amd64 /usr/local/bin/ytt
+  sudo mv -f ./ytt-linux-amd64 /usr/local/bin/ytt
   ytt --version
 }
 
@@ -72,7 +72,7 @@ install_imgpkg () {
   info "Installing imgpkg $1"
   wget https://github.com/vmware-tanzu/carvel-imgpkg/releases/download/$1/imgpkg-linux-amd64
   sudo chmod +x ./imgpkg-linux-amd64
-  sudo mv ./imgpkg-linux-amd64 /usr/local/bin/imgpkg
+  sudo mv -f ./imgpkg-linux-amd64 /usr/local/bin/imgpkg
   imgpgk -v
 }
 
@@ -81,7 +81,7 @@ install_kbld () {
   #$1 is the release string: v0.30.0
   wget https://github.com/vmware-tanzu/carvel-kbld/releases/download/$1/kbld-linux-amd64
   sudo chmod +x ./kbld-linux-amd64
-  sudoo mv ./kbld-linux-amd64 /usr/local/bin/kbld
+  sudoo mv -f ./kbld-linux-amd64 /usr/local/bin/kbld
   kbld --version
 }
 
@@ -89,7 +89,7 @@ install_kubectl () {
   info "Installing kubectl $1"
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   sudo chmod +x ./kubectl
-  sudo mv ./kubectl /usr/local/bin/kubectl
+  sudo mv -f ./kubectl /usr/local/bin/kubectl
 }
 
 install_tanzu_cli () {
