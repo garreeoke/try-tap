@@ -96,11 +96,10 @@ install_tanzu_cli () {
   info "Installing tanzu cli"
   # Get access token
   echo "R: $1"
-  ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d '{"refresh_token":$1}' | jq '.access_token'
+  ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d '{"refresh_token":$1}' | jq '.access_token')
   wget -O tanzu-cli-bundle-linux-amd64.tar --header="Authorization: Bearer $ACCESS_TOKEN" https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1030933/download
   exit 0
   install cli/core/$2/tanzu-core-linux_amd64 /usr/local/bin/tanzu
-  tanzu version
   tanzu plugin clean
   tanzu plugin install -v $2 --local cli package
   tanzu package version
@@ -131,75 +130,6 @@ if ! jq --help > /dev/null 2>&1; then
     exit 2
   fi
 fi
-}
-
-detect_endpoint () {
-  info "Trying to detect endpoint"
-  if [[ ! -s ${BASE_DIR}/secrets/public_ip || -n "$1" ]]; then
-    if [[ -n "${PUBLIC_IP}" ]]; then
-      info "Using provided public IP ${PUBLIC_IP}"
-      echo "${PUBLIC_IP}" > ${BASE_DIR}/secrets/public_ip
-    else 
-      if [[ $(curl -m 1 169.254.169.254 -sSfL &>/dev/null; echo $?) -eq 0 ]]; then
-        # change to ask AWS public metadata? http://169.254.169.254/latest/meta-data/public_ipv4
-        #rm ${BASE_DIR}/secrets/public_ip
-        #while [[ ! -s ${BASE_DIR}/secrets/public_ip ]]; do
-        info "Detected cloud metadata endpoint"
-        info "Trying to determine public IP address (using 'curl -m http://169.254.169.254/latest/meta-data/public-ipv4')"
-        info "IP: $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 | tee ${BASE_DIR}/secrets/public_ip)"
-        #  info "Trying to determine public IP address (using 'dig +short TXT o-o.myaddr.l.google.com @ns1.google.com')"
-        #  dig +short TXT o-o.myaddr.l.google.com @ns1.google.com | sed 's|"||g' | tee ${BASE_DIR}/secrets/public_ip
-        #done
-      else
-        info "No cloud metadata endpoint detected, detecting interface IP (and storing in ${BASE_DIR}/secrets/public_ip): $(ip r get 8.8.8.8 | awk 'NR==1{print $7}' | tee ${BASE_DIR}/secrets/public_ip)"
-      fi
-    fi
-  else
-    info "Using existing Public IP from ${BASE_DIR}/secrets/public_ip"
-    cat ${BASE_DIR}/secrets/public_ip
-  fi
-}
-
-update_endpoint () {
-  #PUBLIC_ENDPOINT="spinnaker.$(cat "${BASE_DIR}/secrets/public_ip").nip.io"   # use nip.io which is a DNS that will always resolve.
-  PUBLIC_ENDPOINT="$(cat "${BASE_DIR}/secrets/public_ip")" 
-
-  info "Updating spinsvc templates with new endpoint: ${PUBLIC_ENDPOINT}"
-  #yq eval -i '.spec.rules[0].host = "'${PUBLIC_ENDPOINT}'"' ${BASE_DIR}/expose/ingress-traefik.yml 
-  yq eval -i 'del(.spec.rules[0].host)' ${BASE_DIR}/expose/ingress-traefik.yml 
-  yq eval -i '.spec.spinnakerConfig.config.security.uiSecurity.overrideBaseUrl = "'https://${PUBLIC_ENDPOINT}'"' ${BASE_DIR}/expose/patch-urls.yml
-  yq eval -i '.spec.spinnakerConfig.config.security.apiSecurity.overrideBaseUrl = "'https://${PUBLIC_ENDPOINT}/api'"' ${BASE_DIR}/expose/patch-urls.yml
-  yq eval -i '.spec.spinnakerConfig.config.security.apiSecurity.corsAccessPattern = "'https://${PUBLIC_ENDPOINT}'"' ${BASE_DIR}/expose/patch-urls.yml
-}
-
-generate_passwords () {
-  # for PASSWORD_ITEM in spinnaker_password minio_password mysql_password; do
-  for PASSWORD_ITEM in spinnaker_password; do
-    if [[ ! -s ${BASE_DIR}/secrets/${PASSWORD_ITEM} ]]; then
-      info "Generating password [${BASE_DIR}/secrets/${PASSWORD_ITEM}]:"
-      openssl rand -base64 36 | tee ${BASE_DIR}/secrets/${PASSWORD_ITEM}
-    else
-      warn "Password already exists: [${BASE_DIR}/secrets/${PASSWORD_ITEM}]"
-    fi
-  done
-  
-  SPINNAKER_PASSWORD=$(cat "${BASE_DIR}/secrets/spinnaker_password")
-}
-
-create_spin_endpoint () {
-
-info "Creating spin_endpoint helper function"
-
-sudo tee /usr/local/bin/spin_endpoint <<-'EOF'
-#!/bin/bash
-#echo "$(kubectl get spinsvc spinnaker -n spinnaker -ojsonpath='{.spec.spinnakerConfig.config.security.uiSecurity.overrideBaseUrl}')"
-echo "$(yq e '.spec.spinnakerConfig.config.security.uiSecurity.overrideBaseUrl' BASE_DIR/expose/patch-urls.yml)"
-[[ -f BASE_DIR/secrets/spinnaker_password ]] && echo "username: 'admin'"
-[[ -f BASE_DIR/secrets/spinnaker_password ]] && echo "password: '$(cat BASE_DIR/secrets/spinnaker_password)'"
-EOF
-sudo chmod 755 /usr/local/bin/spin_endpoint
-
-sudo sed -i "s|BASE_DIR|${BASE_DIR}|g" /usr/local/bin/spin_endpoint
 }
 
 restart_k3s (){

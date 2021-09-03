@@ -17,6 +17,7 @@ TANZU_CLI_VERSION="v1.4.0-rc.5" # Make an option
 
 ### Load Helper Functions
 . ./scripts/functions.sh
+exit 0
 
 info "Running tap setup for Linux"
 
