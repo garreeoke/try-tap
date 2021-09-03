@@ -47,7 +47,10 @@ kubectl create namespace tap-install
 kubectl create secret docker-registry tap-registry -n tap-install --docker-server='registry.pivotal.io' --docker-username=$TANZU_NET_USER --docker-password=$TANZU_NET_PASS
 kapp deploy -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml -y
 tanzu package repository list -n tap-install
-echo "TEST OUT"
+
+echo "EXITING"
+rm -rf cli
+exit 0
 
 echo '' >>~/.bashrc
 echo 'source <(kubectl completion bash)' >>~/.bashrc
