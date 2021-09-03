@@ -49,14 +49,14 @@ kubectl create secret docker-registry tap-registry -n tap-install --docker-serve
 kapp deploy -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml -y
 tanzu package repository list -n tap-install
 
-echo "EXITING"
-rm -rf cli
-exit 0
-
 echo '' >>~/.bashrc
 echo 'source <(kubectl completion bash)' >>~/.bashrc
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
+
+echo "EXITING"
+rm -rf cli
+exit 0
 
 # Install app accelerator
 info "Installing app accelerator ..."
