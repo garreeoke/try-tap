@@ -37,16 +37,13 @@ install_tanzu_cli "$UAA_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 #create_spin_endpoint
 
 ### Set up Kubernetes environment
-install_k3s
-env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
-echo "sleeping"
-sleep 5
-echo "exiting"
-echo '' >>~/.bashrc
-echo 'source <(kubectl completion bash)' >>~/.bashrc
-echo 'alias k=kubectl' >>~/.bashrc
-echo 'complete -F __start_kubectl k' >>~/.bashrc
-exit 0
+#install_k3s
+#env "PATH=$PATH" kubectl config set-context ${KUBERNETES_CONTEXT}
+#echo '' >>~/.bashrc
+#echo 'source <(kubectl completion bash)' >>~/.bashrc
+#echo 'alias k=kubectl' >>~/.bashrc
+#echo 'complete -F __start_kubectl k' >>~/.bashrc
+
 # Install kapp controller
 echo "Install kapp controller"
 kapp deploy -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
