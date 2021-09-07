@@ -30,6 +30,7 @@ install_kbld $KBLD_VERSION
 install_jq
 install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$UAA_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
+install_helm
 
 #detect_endpoint
 #generate_passwords
@@ -53,14 +54,24 @@ kubectl create secret docker-registry tap-registry -n tap-install --docker-serve
 kapp deploy -y -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml
 tanzu package repository list -n tap-install
 
-echo "EXITING"
 rm -rf cli
-exit 0
 
-# Install app accelerator
+# Install Cloud Native Runtimes
+info "Installing CNR"
+tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
+# Install flux and app accelerator
+info "Installing flux"
+kapp deploy -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
 info "Installing app accelerator ..."
+tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
+info "Installing sample accelerators ..."
+kubectl apply -f sample-accelerators-0-2.yaml
 # Install app live view
 info "Installing app live view ..."
+tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
+tanzu package installed list -n tap-install
+info "DONE"
+exit 0
 # Install harbor
 info "Installing harbor ..."
 
