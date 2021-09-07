@@ -58,7 +58,7 @@ rm -rf cli
 
 # Install Cloud Native Runtimes
 info "Installing CNR"
-tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
+tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false -y
 # Install flux and app accelerator
 info "Installing flux"
 kapp deploy -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
