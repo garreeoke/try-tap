@@ -30,7 +30,7 @@ install_jq
 install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
-cfg_tanzu_net
+cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
 
 #detect_endpoint
 #generate_passwords
@@ -51,7 +51,7 @@ kapp deploy -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/rele
 # Setup package repo
 kubectl create namespace tap-install
 kubectl create secret docker-registry tap-registry -n tap-install --docker-server='registry.pivotal.io' --docker-username=$TANZU_NET_USER --docker-password=$TANZU_NET_PASSWORD
-kapp deploy -y -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml
+kapp deploy --yes -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml
 tanzu package repository list -n tap-install
 
 rm -rf cli
@@ -65,7 +65,7 @@ kapp deploy -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
 info "Installing sample accelerators ..."
-kubectl apply -f sample-accelerators-0-2.yaml
+kubectl apply -f manifests/sample-accelerators-0-2.yaml
 # Install app live view
 info "Installing app live view ..."
 tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml

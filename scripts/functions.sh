@@ -59,8 +59,8 @@ install_helm () {
 
 ## Configure tanzunet
 cfg_tanzu_net () {
-  sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/*.yaml
-  sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/*.yaml
+  sed -i "s/TANZU-NET-USER/$1/g" values/*.yaml
+  sed -i "s/TANZU-NET-PASSWORD/$2/g" values/*.yaml
 }
 
 ## Install carvel tools
