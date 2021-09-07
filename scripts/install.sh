@@ -47,7 +47,7 @@ echo 'complete -F __start_kubectl k' >>~/.bashrc
 
 # Install kapp controller
 echo "Installing kapp controller"
-kapp deploy -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
+kapp deploy --yes -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
 # Setup package repo
 kubectl create namespace tap-install
 kubectl create secret docker-registry tap-registry -n tap-install --docker-server='registry.pivotal.io' --docker-username=$TANZU_NET_USER --docker-password=$TANZU_NET_PASSWORD
@@ -58,10 +58,10 @@ rm -rf cli
 
 # Install Cloud Native Runtimes
 info "Installing CNR"
-tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false -y
+tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 # Install flux and app accelerator
 info "Installing flux"
-kapp deploy -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
+kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
 info "Installing sample accelerators ..."
