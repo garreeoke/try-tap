@@ -59,8 +59,8 @@ install_helm () {
 
 ## Configure tanzunet
 cfg_tanzu_net () {
-  sed -i 's/TANZU-NET-USER/$TANZU_NET_USER/g' values/*.yaml
-  sed -i 's/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g' values/*.yaml
+  sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/*.yaml
+  sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/*.yaml
 }
 
 ## Install carvel tools
@@ -87,7 +87,7 @@ install_imgpkg () {
   wget https://github.com/vmware-tanzu/carvel-imgpkg/releases/download/$1/imgpkg-linux-amd64
   sudo chmod +x ./imgpkg-linux-amd64
   sudo mv -f ./imgpkg-linux-amd64 /usr/local/bin/imgpkg
-  imgpgk -v
+  imgpkg -v
 }
 
 install_kbld () {
@@ -95,7 +95,7 @@ install_kbld () {
   #$1 is the release string: v0.30.0
   wget https://github.com/vmware-tanzu/carvel-kbld/releases/download/$1/kbld-linux-amd64
   sudo chmod +x ./kbld-linux-amd64
-  sudoo mv -f ./kbld-linux-amd64 /usr/local/bin/kbld
+  sudo mv -f ./kbld-linux-amd64 /usr/local/bin/kbld
   kbld --version
 }
 
