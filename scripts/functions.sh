@@ -57,6 +57,12 @@ install_helm () {
   ./get_helm.sh
 }
 
+## Configure tanzunet
+cfg_tanzu_net () {
+  sed -i 's/TANZU-NET-USER/$TANZU_NET_USER/g' values/*.yaml
+  sed -i 's/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g' values/*.yaml
+}
+
 ## Install carvel tools
 install_kapp () {
   # $1 is the release string: v0.39.0
