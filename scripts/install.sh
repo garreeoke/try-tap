@@ -28,7 +28,7 @@ install_imgpkg $IMGPKG_VERSION
 install_kbld $KBLD_VERSION
 install_jq
 install_kubectl $KUBECTL_VERSION
-install_tanzu_cli $TANZU_NET_REFRESH_TOKEN "$TANZU_CLI_VERSION"
+install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
 cfg_tanzu_net
 
