@@ -32,8 +32,6 @@ install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
 cfg_tanzu_net
 
-echo "TNRT: $TANZU_NET_REFRESH_TOKEN"
-exit 0
 #detect_endpoint
 #generate_passwords
 #update_endpoint
