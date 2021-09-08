@@ -5,6 +5,21 @@ expose:
   type: loadBalancer
   tls:
     enabled: false
+  loadBalancer:
+    # The name of LoadBalancer service
+    name: harbor
+    # Set the IP if the LoadBalancer supports assigning IP
+    IP: ""
+    ports:
+      # The service port Harbor listens on when serving with HTTP
+      httpPort: 80
+      # The service port Harbor listens on when serving with HTTPS
+      httpsPort: 443
+      # The service port Notary listens on. Only needed when notary.enabled
+      # is set to true
+      notaryPort: 4443
+    annotations: { }
+    sourceRanges: [ ]
   nodePort:
     # The name of NodePort service
     name: harbor
@@ -25,67 +40,6 @@ expose:
         port: 4443
         # The node port Notary listens on
         nodePort: 30004
-
-# The internal TLS used for harbor components secure communicating. In order to enable https
-# in each components tls cert files need to provided in advance.
-internalTLS:
-  # If internal TLS enabled
-  enabled: false
-  # There are three ways to provide tls
-  # 1) "auto" will generate cert automatically
-  # 2) "manual" need provide cert file manually in following value
-  # 3) "secret" internal certificates from secret
-  certSource: "auto"
-  # The content of trust ca, only available when `certSource` is "manual"
-  trustCa: ""
-  # core related cert configuration
-  core:
-    # secret name for core's tls certs
-    secretName: ""
-    # Content of core's TLS cert file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of core's TLS key file, only available when `certSource` is "manual"
-    key: ""
-  # jobservice related cert configuration
-  jobservice:
-    # secret name for jobservice's tls certs
-    secretName: ""
-    # Content of jobservice's TLS key file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of jobservice's TLS key file, only available when `certSource` is "manual"
-    key: ""
-  # registry related cert configuration
-  registry:
-    # secret name for registry's tls certs
-    secretName: ""
-    # Content of registry's TLS key file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of registry's TLS key file, only available when `certSource` is "manual"
-    key: ""
-  # portal related cert configuration
-  portal:
-    # secret name for portal's tls certs
-    secretName: ""
-    # Content of portal's TLS key file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of portal's TLS key file, only available when `certSource` is "manual"
-    key: ""
-  # chartmuseum related cert configuration
-  chartmuseum:
-    # secret name for chartmuseum's tls certs
-    secretName: ""
-    # Content of chartmuseum's TLS key file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of chartmuseum's TLS key file, only available when `certSource` is "manual"
-    key: ""
-  # trivy related cert configuration
-  trivy:
-    # secret name for trivy's tls certs
-    secretName: ""
-    # Content of trivy's TLS key file, only available when `certSource` is "manual"
-    crt: ""
-    # Content of trivy's TLS key file, only available when `certSource` is "manual"
-    key: ""
 
 ipFamily:
   # ipv6Enabled set to true if ipv6 is enabled in cluster, currently it affected the nginx related component
