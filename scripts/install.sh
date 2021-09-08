@@ -76,7 +76,7 @@ tanzu package installed list -n tap-install
 info "Installing harbor ..."
 helm repo add harbor https://helm.goharbor.io
 kubectl create ns harbor
-helm install my-release harbor/harbor -n harbor -v values/harbor-values.yaml
+helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.yaml
 
 # Install TBS
 info "Installing Tanzu Build Service would be next"
