@@ -69,14 +69,14 @@ info "Installing sample accelerators ..."
 kubectl apply -f manifests/sample-accelerators-0-2.yaml
 # Install app live view
 info "Installing app live view ..."
-tanzu package install app-live-view -p gappliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
+tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
 tanzu package installed list -n tap-install
 
 # Install harbor
 info "Installing harbor ..."
 helm repo add harbor https://helm.goharbor.io
 kubectl create ns harbor
-helm install my-release harbor/harbor -n harbor
+helm install my-release harbor/harbor -n harbor -v values/harbor-values.yaml
 
 # Install TBS
 info "Installing Tanzu Build Service would be next"
