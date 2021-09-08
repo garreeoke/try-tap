@@ -66,7 +66,7 @@ kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
 info "Installing sample accelerators ..."
-kubectl apply -f manifests/sample-accelerators-0-2.yaml
+kubectl apply -f manifests/sample-accelerators-0.2.yaml
 # Install app live view
 info "Installing app live view ..."
 tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
