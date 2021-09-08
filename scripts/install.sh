@@ -30,6 +30,7 @@ install_jq
 install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
+
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
 
 #detect_endpoint
@@ -68,14 +69,14 @@ info "Installing sample accelerators ..."
 kubectl apply -f manifests/sample-accelerators-0-2.yaml
 # Install app live view
 info "Installing app live view ..."
-tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
+tanzu package install app-live-view -p gappliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
 tanzu package installed list -n tap-install
-info "DONE"
-exit 0
-
 
 # Install harbor
 info "Installing harbor ..."
+helm repo add harbor https://helm.goharbor.io
+kubectl create ns harbor
+helm install my-release harbor/harbor -n harbor
 
 # Install TBS
-info "Installing Tanzu Build Service"
+info "Installing Tanzu Build Service would be next"
