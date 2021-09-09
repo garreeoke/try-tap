@@ -43,11 +43,12 @@ function exec_kubectl_mutating() {
 
 install_k3s () {
   info "--- Installing K3s ---"
-  # INSTALL_K3S_EXEC="--tls-san $(cat ${BASE_DIR}/secrets/public_ip)"
   curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
   cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
   chmod 666 ~/.kube/config
-  #curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.19.7+k3s1" K3S_KUBECONFIG_MODE=644 sh -
+  info "Add insecure registry and restart"
+  cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
+  sudo systemctl restart k3s
   info " --- END K3s --- "
 }
 

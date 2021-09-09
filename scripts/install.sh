@@ -57,22 +57,31 @@ tanzu package repository list -n tap-install
 
 rm -rf cli
 
-# Install Cloud Native Runtimes
+## Install Cloud Native Runtimes
 info "Installing CNR"
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
-# Install flux and app accelerator
+sleep 5
+kubectl get svc -n contour-external envoy -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields)' - > manifests/svc_envoy.yaml
+sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
+kubectl apply -f manifests/svc_envoy.yaml
+
+## Install flux and app accelerator
 info "Installing flux"
 kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
+kubectl get svc -n accelerator-system acc-ui-server -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields)' - > manifests/svc_accelerator.yaml
+sed -i "s/port: 80/port: 8081/g" manifests/svc_envoy.yaml
+kubectl apply -f manifests/svc_envoy.yaml
 info "Installing sample accelerators ..."
 kubectl apply -f manifests/sample-accelerators-0.2.yaml
-# Install app live view
+
+## Install app live view
 info "Installing app live view ..."
 tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
 tanzu package installed list -n tap-install
 
-# Install harbor
+## Install harbor
 info "Installing harbor ..."
 helm repo add harbor https://helm.goharbor.io
 kubectl create ns harbor

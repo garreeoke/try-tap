@@ -1,0 +1,9 @@
+mirrors:
+  docker.io:
+    endpoint:
+      - "http://harbor.harbor.svc.cluster.local:8085"
+configs:
+  "harbor.harbor.svc.cluster.local:8085":
+    auth:
+      username: admin # this is the registry username
+      password: Harbor12345 # this is the registry password

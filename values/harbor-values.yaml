@@ -12,7 +12,7 @@ expose:
     IP: ""
     ports:
       # The service port Harbor listens on when serving with HTTP
-      httpPort: 8080
+      httpPort: 8085
       # The service port Harbor listens on when serving with HTTPS
       httpsPort: 8443
       # The service port Notary listens on. Only needed when notary.enabled
