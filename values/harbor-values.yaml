@@ -12,9 +12,9 @@ expose:
     IP: ""
     ports:
       # The service port Harbor listens on when serving with HTTP
-      httpPort: 80
+      httpPort: 8080
       # The service port Harbor listens on when serving with HTTPS
-      httpsPort: 443
+      httpsPort: 8443
       # The service port Notary listens on. Only needed when notary.enabled
       # is set to true
       notaryPort: 4443
@@ -208,7 +208,7 @@ core:
   # The default key pair will be used if it isn't set
   secretName: ""
   # The XSRF key. Will be generated automatically if it isn't specified
-  xsrfKey: ""
+  xsrfKey: "blahblahblahblah"
   ## The priority class to run the pod as
   priorityClassName:
 
