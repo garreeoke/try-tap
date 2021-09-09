@@ -76,6 +76,7 @@ tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.
 kubectl get svc -n accelerator-system acc-ui-server -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort)' - > manifests/svc_accelerator.yaml
 sed -i "s/port: 80/port: 8081/g" manifests/svc_accelerator.yaml
 sed -i "s/ name: acc-ui-server/ name: acc-ui-server-8081/g" manifests/svc_accelerator.yaml
+sed -i "s/type: ClusterIP/type: LoadBalancer/g" manifests/svc_accelerator.yaml
 kubectl apply -f manifests/svc_accelerator.yaml
 info "Installing sample accelerators ..."
 kubectl apply -f manifests/sample-accelerators-0.2.yaml
