@@ -62,7 +62,7 @@ rm -rf cli
 info "Installing CNR"
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 sleep 5
-kubectl get svc -n contour-external envoy -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields)' - > manifests/svc_envoy.yaml
+kubectl get svc -n contour-external envoy -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .metadata.labels["kapp.k14s.io/app"], .metadata.labels["kapp.k14s.io/association"], .spec.selector["kapp.k14s.io/app"])' - > manifests/svc_envoy.yaml
 sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
 sed -i "s/name: envoy/name: envoy-8080/g" manifests/svc_envoy.yaml
 kubectl apply -f manifests/svc_envoy.yaml
@@ -72,7 +72,7 @@ info "Installing flux"
 kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
-kubectl get svc -n accelerator-system acc-ui-server -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields)' - > manifests/svc_accelerator.yaml
+kubectl get svc -n accelerator-system acc-ui-server -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .metadata.labels["kapp.k14s.io/app"], .metadata.labels["kapp.k14s.io/association"], .spec.selector["kapp.k14s.io/app"])' - > manifests/svc_accelerator.yaml
 sed -i "s/port: 80/port: 8081/g" manifests/svc_accelerator.yaml
 sed -i "s/name: acc-ui-server/name: acc-ui-server-8081/g" manifests/svc_accelerator.yaml
 kubectl apply -f manifests/svc_accelerator.yaml
