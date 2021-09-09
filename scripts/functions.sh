@@ -44,11 +44,17 @@ function exec_kubectl_mutating() {
 install_k3s () {
   info "--- Installing K3s ---"
   curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
+  info "pausing for 10 seconds"
+  sleep 10
   cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
   chmod 666 ~/.kube/config
+  info "sleeping 5"
+  sleep 5
   info "Add insecure registry and restart"
   cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
   sudo systemctl restart k3s
+  info "sleeping 7"
+  sleep 7
   info " --- END K3s --- "
 }
 
