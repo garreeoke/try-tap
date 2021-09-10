@@ -74,6 +74,8 @@ kubectl apply -f manifests/svc_envoy.yaml
 ## Install flux and app accelerator
 info "Installing flux"
 kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
+sleep 1
+kubectl delete -n flux-system networkpolicies --all
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
 sleep 60

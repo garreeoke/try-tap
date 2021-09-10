@@ -30,7 +30,7 @@ ipFamily:
   ipv4:
     enabled: true
 
-externalURL: http://core.harbor.domain
+externalURL: http://10.168.0.6:8085
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamicly.
 # Specify another StorageClass in the "storageClass" or set "existingClaim"
@@ -284,7 +284,7 @@ registry:
       privateKeySecret: "my-secret"
 
 chartmuseum:
-  enabled: true
+  enabled: false
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -311,7 +311,7 @@ chartmuseum:
 
 trivy:
   # enabled the flag to enable Trivy scanner
-  enabled: true
+  enabled: false
   image:
     # repository the repository for Trivy adapter image
     repository: goharbor/trivy-adapter-photon
@@ -371,7 +371,7 @@ trivy:
   priorityClassName:
 
 notary:
-  enabled: true
+  enabled: false
   server:
     # set the service account to be used, default if left empty
     serviceAccountName: ""
