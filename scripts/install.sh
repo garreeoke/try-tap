@@ -64,8 +64,11 @@ tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n
 info "waiting 60 seconds"
 sleep 60
 kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort)' - > manifests/svc_envoy.yaml
+sleep 1
 sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
+sleep 1
 sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
+sleep 1
 kubectl apply -f manifests/svc_envoy.yaml
 
 ## Install flux and app accelerator
@@ -74,10 +77,14 @@ kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v
 info "Installing app accelerator ..."
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
 kubectl get svc -n accelerator-system acc-ui-server -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort, .spec.healthCheckNodePort)' - > manifests/svc_accelerator.yaml
+sleep 1
 sed -i "s/port: 80/port: 8081/g" manifests/svc_accelerator.yaml
+sleep 1
 sed -i "s/ name: acc-ui-server/ name: acc-ui-server-8081/g" manifests/svc_accelerator.yaml
+sleep 1
 sed -i "s/type: ClusterIP/type: LoadBalancer/g" manifests/svc_accelerator.yaml
 kubectl apply -f manifests/svc_accelerator.yaml
+sleep 1
 info "Installing sample accelerators ..."
 kubectl apply -f manifests/sample-accelerators-0.2.yaml
 
