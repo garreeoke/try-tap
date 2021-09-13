@@ -60,6 +60,10 @@ rm -rf cli
 
 ## Install Cloud Native Runtimes
 info "Installing CNR"
+sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/cnr-values.yaml
+sleep 1
+sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/cnr-values.yaml
+sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 info "waiting 60 seconds"
 sleep 60
@@ -77,6 +81,10 @@ kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v
 sleep 1
 kubectl delete -n flux-system networkpolicies --all
 info "Installing app accelerator ..."
+sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/app-acclerator-values.yaml
+sleep 1
+sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/app-accelerator-values.yaml
+sleep 1
 tanzu package install app-accelerator -p accelerator.apps.tanzu.vmware.com -v 0.2.0 -n tap-install -f values/app-accelerator-values.yaml
 sleep 60
 kubectl get svc -n accelerator-system acc-ui-server -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1])' - > manifests/svc_accelerator.yaml
@@ -93,7 +101,12 @@ kubectl apply -f manifests/sample-accelerators-0.2.yaml
 
 ## Install app live view
 info "Installing app live view ..."
+sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/app-live-view-values.yaml
+sleep 1
+sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/app-live-view-values.yaml
+sleep 1
 tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
+sleep 1
 tanzu package installed list -n tap-install
 
 ## Install harbor
