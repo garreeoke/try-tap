@@ -33,7 +33,7 @@ install_unzip
 install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
-install kp "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
+install_kp "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
 

@@ -1,5 +1,5 @@
 mirrors:
-  harbor.external.ip:
+  harbor.external.ip:8085:
     endpoint:
       - "http://harbor.external.ip:8085"
 configs:
