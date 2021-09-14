@@ -56,7 +56,7 @@ tanzu package repository list -n tap-install
 
 rm -rf cli
 
-## Install Cloud Native Runtimes
+## Install Cloud Native Runtimesl
 info "Installing CNR"
 sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/cnr-values.yaml
 sleep 1
@@ -136,11 +136,14 @@ docker login "${HARBOR_SVC}:8085" -u admin -p 'Harbor12345'
 # Login to pivotal reg
 docker login registry.pivotal.io -u $TANZU_NET_USER -p $TANZU_NET_PASSWORD
 # Copy image from piv to local
+info "Copying image from registry.pivotal.io/build-service/bundle:${TBS_VERSION} to ${HARBOR_SVC}:8085/library/build-service"
 imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-repo "${HARBOR_SVC}:8085/library/build-service"
 # Download image from repo
+info "Pulling image from ${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}"
 imgpkg pull -b "${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}" -o /tmp/bundle
 # Deploy
-ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' -v tanzunet_username="$TANZU_NET_USER" -v tanzunet_password="$TANZU_NET_PASSWORD" | sudo kbld -f /tmp/bundle/.imgpkg/images.yml -f- | sudo kapp deploy -a tanzu-build-service -f- -y
+ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' -v tanzunet_username="$TANZU_NET_USER" -v tanzunet_password="$TANZU_NET_PASSWORD" | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y
 # Kp command to see builders
 kp clusterbuilder list
-rm -rf /tmp/bundle
+
+echo "Made it ... "
