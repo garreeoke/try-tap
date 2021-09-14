@@ -138,7 +138,7 @@ docker login registry.pivotal.io -u $TANZU_NET_USER -p $TANZU_NET_PASSWORD
 # Copy image from piv to local
 imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-repo ${HARBOR_SVC}:8085/library/build-service
 # Deploy
-ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository='${HARBOR_SVC}:8085/library/build-service' -v docker_username='admin' -v docker_password='Harbor12345' -v tanzunet_username="$TANZU_NET_USER" -v tanzunet_password="$TANZU_NET_PASSWORD" | sudo bld -f /tmp/bundle/.imgpkg/images.yml | sudo kapp deploy -a tanzu-build-service -f- -y
+ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository='${HARBOR_SVC}:8085/library/build-service' -v docker_username='admin' -v docker_password='Harbor12345' -v tanzunet_username="$TANZU_NET_USER" -v tanzunet_password="$TANZU_NET_PASSWORD" | sudo kbld -f /tmp/bundle/.imgpkg/images.yml | sudo kapp deploy -a tanzu-build-service -f- -y
 sudo kapp deploy -a tanzu-build-service -f- -y --debug
 # Kp command to see builders
 kp clusterbuilder list
