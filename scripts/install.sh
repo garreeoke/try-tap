@@ -142,7 +142,7 @@ imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-re
 info "Pulling image from ${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}"
 imgpkg pull -b "${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}" -o /tmp/bundle
 # Deploy
-ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' -v | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y --wait-timeout 45m0s
+ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y --wait-timeout 45m0s
 # Kp command to see builders
 kp clusterbuilder list
 
