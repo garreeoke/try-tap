@@ -115,9 +115,9 @@ helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.ya
 # Wait for harbor service to have external ip and then change registries
 # May delete if not needed
 HARBOR_SVC=""
-while [ "$HARBOR_SVC" == "" ]
+while [ "$HARBOR_SVC" == "" ] || [ "$HARBOR_SVC" == "<pending>" ]
 do
-        echo "Waiting for harbor service"
+        echo "Waiting for harbor service ... cntrl-c if takes too long"
         sleep 1
         HARBOR_SVC=$(kubectl get svc harbor -n harbor | grep harbor | kubectl get svc harbor -n harbor | grep harbor | awk '{print $4}')
         echo "HARBOR_SVC: $HARBOR_SVC"
