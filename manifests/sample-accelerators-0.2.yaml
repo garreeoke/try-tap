@@ -13,6 +13,23 @@ spec:
 apiVersion: accelerator.apps.tanzu.vmware.com/v1alpha1
 kind: Accelerator
 metadata:
+  annotations:
+  name: golang-api-server
+spec:
+  git:
+    ref:
+      branch: main
+    url: https://github.com/garreeoke/go-api-template
+  description: Files to get started creating a simple go api server
+  displayName: Simple Go API Server
+  iconUrl: https://miro.medium.com/max/600/1*i2skbfmDsHayHhqPfwt6pA.png
+  tags:
+    - golang
+    - rest api
+---
+apiVersion: accelerator.apps.tanzu.vmware.com/v1alpha1
+kind: Accelerator
+metadata:
   name: hello-fun
 spec:
   git:

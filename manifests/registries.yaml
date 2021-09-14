@@ -1,9 +1,9 @@
 mirrors:
-  docker.io:
+  harbor.external.ip:
     endpoint:
-      - "http://10.168.0.6:8085"
+      - "http://harbor.external.ip:8085"
 configs:
-  "10.168.0.6:8085":
+  "harbor.external.ip:8085":
     auth:
       username: admin # this is the registry username
       password: Harbor12345 # this is the registry password

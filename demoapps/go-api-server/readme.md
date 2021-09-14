@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" --data "@./setup/go-api-post-data.json" http://10.168.0.6:8081/api/accelerators/zip?name=golang-api-server --output go.zip

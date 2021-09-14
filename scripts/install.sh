@@ -13,6 +13,7 @@ IMGPKG_VERSION="v0.17.0"
 KBLD_VERSION="v0.30.0"
 KUBECTL_VERSION=v1.22.0
 TANZU_CLI_VERSION="v1.4.0-rc.5" # Make an option
+TBS_VERSION="1.2.2"
 
 #TODO Checks for variables
 
@@ -28,16 +29,13 @@ install_imgpkg $IMGPKG_VERSION
 install_kbld $KBLD_VERSION
 install_jq
 install_yq
+install_unzip
 install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
+install kp "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
-
-#detect_endpoint
-#generate_passwords
-#update_endpoint
-#create_spin_endpoint
 
 ### Set up Kubernetes environment
 install_k3s
@@ -114,6 +112,33 @@ info "Installing harbor ..."
 helm repo add harbor https://helm.goharbor.io
 kubectl create ns harbor
 helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.yaml
+# Wait for harbor service to have external ip and then change registries
+# May delete if not needed
+HARBOR_SVC=""
+while [ "$HARBOR_SVC" == "" ]
+do
+        echo "Waiting for harbor service"
+        sleep 1
+        HARBOR_SVC=$(kubectl get svc harbor -n harbor | grep harbor | kubectl get svc harbor -n harbor | grep harbor | awk '{print $4}')
+        echo "HARBOR_SVC: $HARBOR_SVC"
+done
+sed -i "s/harbor.external.ip/$HARBOR_SVC/g" manifests/registries.yaml
+# Restart k3s
+info "Add insecure registry and restart"
+cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
+sudo systemctl restart k3s
+sleep 5
 
 # Install TBS
-info "Installing Tanzu Build Service would be next"
+info "Installing Tanzu Build Service ..."
+# Login to local reg
+docker login ${HARBOR_SVC}:8085
+# Login to pivotal reg
+docker login registry.pivotal.io -u $TANZU_NET_USER -p $TANZU_NET_PASSWORD
+# Copy image from piv to local
+imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-repo ${HARBOR_SVC}:8085/library/build-service
+# Deploy
+ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository='${HARBOR_SVC}:8085/library/build-service' -v docker_username='admin' -v docker_password='Harbor12345' -v tanzunet_username="$TANZU_NET_USER" -v tanzunet_password="$TANZU_NET_PASSWORD" | sudo bld -f /tmp/bundle/.imgpkg/images.yml | sudo kapp deploy -a tanzu-build-service -f- -y
+sudo kapp deploy -a tanzu-build-service -f- -y --debug
+# Kp command to see builders
+kp clusterbuilder list

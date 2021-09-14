@@ -1,0 +1,14 @@
+apiVersion: kpack.io/v1alpha1
+kind: Image
+metadata:
+  name: golang-api-server
+spec:
+  tag: harbor.external.ip:8085/library/golang-api-server
+  serviceAccount: default
+  builder:
+    kind: ClusterBuilder
+    name: default
+  source:
+    git:
+      url: https://github.com/your-repo/your-project-name
+      revision: main

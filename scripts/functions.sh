@@ -50,11 +50,6 @@ install_k3s () {
   chmod 666 ~/.kube/config
   info "sleeping 5"
   sleep 5
-  info "Add insecure registry and restart"
-  cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
-  sudo systemctl restart k3s
-  info "sleeping 7"
-  sleep 7
   info " --- END K3s --- "
 }
 
@@ -127,6 +122,13 @@ install_tanzu_cli () {
   tanzu package version
 }
 
+install_kp () {
+    ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
+    wget -O kp --header="Authorization: Bearer $ACCESS_TOKEN" https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1030933/download
+    sudo chmod +x ./kp
+    sudo mv -f ./kp /usr/local/bin/kp
+}
+
 generate_token_data() {
   cat <<EOF
 {
@@ -155,6 +157,19 @@ if ! jq --help > /dev/null 2>&1; then
   if apt-get -v > /dev/null 2>&1; then 
     info "Using apt-get to install jq"
     sudo apt-get update && sudo apt-get install -y jq
+  else
+    error "ERROR: Unsupported OS! Cannot automatically install jq. Please try install jq first before rerunning this script"
+    exit 2
+  fi
+fi
+}
+
+install_unzip () {
+  if ! unzip --help > /dev/null 2>&1; then
+  # only try installing if a Debian system
+  if apt-get -v > /dev/null 2>&1; then
+    info "Using apt-get to install unzip"
+    sudo apt-get update && sudo apt-get install -y unzip
   else
     error "ERROR: Unsupported OS! Cannot automatically install jq. Please try install jq first before rerunning this script"
     exit 2
