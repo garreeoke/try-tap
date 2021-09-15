@@ -55,10 +55,13 @@ while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
 do
         sleep 1
         LOCAL_EXTERNAL_IP=$(kubectl get svc traefik -n kube-system | grep traefik | awk '{print $4}')
-        echo "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
+        info "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
 done
 
-# Install kapp controller
+### Change kubeconfig to use LOCAL_EXTERNAL_IP
+sed -i "s/127.0.0.1/$LOCAL_EXTERNAL_IP/g" ~/.kube/config
+
+### Install kapp controller
 info "Installing kapp controller"
 kapp deploy --yes -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
 # Setup package repo
@@ -78,12 +81,14 @@ sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 info "waiting 60 seconds"
 sleep 60
-kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
+kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
 sleep 1
+info "Check envoy error message"
+sleep 30
 kubectl apply -f manifests/svc_envoy.yaml
 
 ## Install flux and app accelerator
