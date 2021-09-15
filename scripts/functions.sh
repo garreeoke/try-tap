@@ -114,7 +114,7 @@ install_tanzu_cli () {
   # Get access token
   ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
   # Issue here ... seems this URL changes over time ... may have to be able to find it
-  wget -O tanzu-cli-bundle-linux-amd64.tar --header="Authorization: Bearer $ACCESS_TOKEN" https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1040320/download
+  wget -O tanzu-cli-bundle-linux-amd64.tar --header="Authorization: Bearer $ACCESS_TOKEN" "https://network.pivotal.io/api/v2/products/build-service/releases/$3/product_files/$4/download"
   tar -xvf tanzu-cli-bundle-linux-amd64.tar
   rm -f tanzu-cli-bundle-linux-amd64.tar
   sudo install cli/core/$2/tanzu-core-linux_amd64 /usr/local/bin/tanzu
@@ -125,7 +125,7 @@ install_tanzu_cli () {
 
 install_kp () {
     ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
-    wget -O kp --header="Authorization: Bearer $ACCESS_TOKEN" "https://network.pivotal.io/api/v2/products/build-service/releases/$3/product_files/$4/download"
+    wget -O kp --header="Authorization: Bearer $ACCESS_TOKEN" https://network.pivotal.io/api/v2/products/build-service/releases/925788/product_files/1000629/download
     sudo chmod +x ./kp
     sudo mv -f ./kp /usr/local/bin/kp
 }
