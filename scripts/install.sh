@@ -132,7 +132,6 @@ sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" values/harbor-values.yaml
 helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.yaml
 # Wait for harbor service to have external ip and then change registries
 # May delete if not needed
-
 sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" manifests/registries.yaml
 
 # Restart k3sE
