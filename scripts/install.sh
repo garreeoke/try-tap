@@ -81,15 +81,14 @@ sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 info "waiting 60 seconds"
 sleep 60
-kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
+kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.healthCheckNodePort, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
 sleep 1
-info "Check envoy error message"
-sleep 30
 kubectl apply -f manifests/svc_envoy.yaml
+info "Check envoy error message"
 
 ## Install flux and app accelerator
 info "Installing flux"
@@ -129,12 +128,13 @@ tanzu package installed list -n tap-install
 info "Installing harbor ..."
 helm repo add harbor https://helm.goharbor.io
 kubectl create ns harbor
+sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" values/harbor-values.yaml
 helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.yaml
 # Wait for harbor service to have external ip and then change registries
 # May delete if not needed
 
 sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" manifests/registries.yaml
-sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" values/harbor-values.yaml
+
 # Restart k3sE
 info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
