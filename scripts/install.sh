@@ -152,8 +152,10 @@ sleep 5
 # Install TBS
 info "Installing Tanzu Build Service ..."
 # Login to local reg
-docker login "${LOCAL_EXTERNAL_IP}:8085" -u admin -p 'Harbor12345'
+info "Logging in to harbor"
+docker login "${LOCAL_EXTERNAL_IP}:8085"
 # Login to pivotal reg
+info "Logging in to tanzu registry"
 docker login registry.pivotal.io -u $TANZU_NET_USER -p $TANZU_NET_PASSWORD
 # Copy image from piv to local
 info "Copying image from registry.pivotal.io/build-service/bundle:${TBS_VERSION} to ${LOCAL_EXTERNAL_IP}:8085/library/build-service"
