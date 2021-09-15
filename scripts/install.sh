@@ -69,7 +69,7 @@ sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 info "waiting 60 seconds"
 sleep 60
-kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort)' - > manifests/svc_envoy.yaml
+kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.clusterIP, .spec.clusterIPs, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
 sleep 1
@@ -83,7 +83,7 @@ kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v
 sleep 1
 kubectl delete -n flux-system networkpolicies --all
 info "Installing app accelerator ..."
-sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/app-acclerator-values.yaml
+sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/app-accelerator-values.yaml
 sleep 1
 sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/app-accelerator-values.yaml
 sleep 1
