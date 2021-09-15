@@ -142,11 +142,21 @@ imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-re
 info "Pulling image from ${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}"
 imgpkg pull -b "${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}" -o /tmp/bundle
 # Deploy
-ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y --wait-timeout 45m0s
-# Have to get the output as there is a timeout
+ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' -v no_proxy=${HARBOR_SVC} | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y --wait-timeout 45m0s
+# Don't know if needed yet
+kubectl apply -f manifests/roles.yaml
+# Have to get the output as there is a timeout ... so using dry-run-with-image-upload
 kp import -f manifests/descriptor.yaml --registry-verify-certs=false --dry-run-with-image-upload --output yaml > manifests/build-stuff.yaml
 kubectl apply -f manifests/build-stuff.yaml
 # Kp command to see builders
 kp clusterbuilder list
 
-echo "Made it ... "
+echo "Done with installing TAP via try-tap ..."
+echo ""
+echo "Check out the tap components in your browser"
+echo "--------------------------------------------"
+echo "Accelerator: http://${HARBOR_SVC}:8081"
+echo "App Live View: https://${HARBOR_SVC}:5112"
+echo "Harbor: http://${HARBOR_SVC}:8085 user:admin password: Harbor12345"
+echo ""
+echo "Please try the guided demo at [link to go walk through]"

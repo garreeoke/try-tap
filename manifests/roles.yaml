@@ -1,0 +1,122 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: build-service-install-cluster-role
+rules:
+  - apiGroups:
+      - "admissionregistration.k8s.io"
+    resources:
+      - mutatingwebhookconfigurations
+      - validatingwebhookconfigurations
+    verbs:
+      - '*'
+  - apiGroups:
+      - "rbac.authorization.k8s.io"
+    resources:
+      - clusterroles
+      - clusterrolebindings
+    verbs:
+      - '*'
+  - apiGroups:
+      - "apiextensions.k8s.io"
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - '*'
+  - apiGroups:
+      - "storage.k8s.io"
+    resources:
+      - storageclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - kpack.io
+    resources:
+      - builds
+      - builds/status
+      - builds/finalizers
+      - images
+      - images/status
+      - images/finalizers
+      - builders
+      - builders/status
+      - clusterbuilders
+      - clusterbuilders/status
+      - clusterstores
+      - clusterstores/status
+      - clusterstacks
+      - clusterstacks/status
+      - sourceresolvers
+      - sourceresolvers/status
+    verbs:
+      - '*'
+  - apiGroups:
+      - "projects.vmware.com"
+    resources:
+      - projects
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: build-service-install-role
+  namespace: build-service
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+      - serviceaccounts
+      - services
+      - namespaces
+    verbs:
+      - '*'
+  - apiGroups:
+      - "rbac.authorization.k8s.io"
+    resources:
+      - roles
+      - rolebindings
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kpack-install-role
+  namespace: kpack
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - serviceaccounts
+      - namespaces
+      - secrets
+      - configmaps
+    verbs:
+      - '*'
+  - apiGroups:
+      - "rbac.authorization.k8s.io"
+    resources:
+      - roles
+      - rolebindings
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+    verbs:
+      - '*'
