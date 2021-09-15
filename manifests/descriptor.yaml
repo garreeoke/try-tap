@@ -1,0 +1,84 @@
+apiVersion: kp.kpack.io/v1alpha3
+kind: DependencyDescriptor
+defaultClusterBuilder: base
+defaultClusterStack: base
+lifecycle:
+  image: registry.pivotal.io/tbs-dependencies/lifecycle@sha256:c923a81a1c3908122e29a30bae5886646d6ec26429bad4842c67103636041d93
+clusterStores:
+  - name: default
+    sources:
+      - image: registry.pivotal.io/tanzu-go-buildpack/go@sha256:9fd3ba0f1f99f7dba25d22dc955233c7b38b7f1b55b038464968d1f1e37afd3d
+        #- image: registry.pivotal.io/tanzu-java-buildpack/java@sha256:08a77ef5252cd432ab97419b5725440c8c2f9219fb1bb346e06705048691828e
+        #- image: registry.pivotal.io/tanzu-nodejs-buildpack/nodejs@sha256:832143c8edc98d6586fd731da3b00f16473430a3124ed95251f13266b7e5b809
+        #- image: registry.pivotal.io/tanzu-java-native-image-buildpack/java-native-image@sha256:acfbf3b2d2d4fab1109bb43557057be0eb9d67837f67e2eeaf9e58bac512b052
+        #  - image: registry.pivotal.io/tanzu-dotnet-core-buildpack/dotnet-core@sha256:447361df8dc041aad6544700962fbc4e8feca9e35b0a69742ad0337ed1d33f27
+      - image: registry.pivotal.io/tanzu-python-buildpack/python@sha256:1222d5f695222597687173b1b8612844f3ccd763eae86e99c3ebacc41390db40
+        #- image: registry.pivotal.io/tanzu-procfile-buildpack/procfile@sha256:fadf8498e6b112221bcadc58f2e12db39734075fd5171c288cadc3b9928ec532
+        #- image: registry.pivotal.io/tbs-dependencies/tanzu-buildpacks_php@sha256:27f003c0ad6d45fd78cd9dbb71ae55b5ba1e599d8facfd98269dd29f42028870
+      - image: registry.pivotal.io/tbs-dependencies/tanzu-buildpacks_nginx@sha256:5798dfecab8a4c67bbc3b956b6bef4474c52197b8949f02b8b866e19bfcde71e
+        #- image: registry.pivotal.io/tbs-dependencies/tanzu-buildpacks_httpd@sha256:4e15987d21d3d4f0cbc6be0d3b283db1d3f368eb15d0b1b59d835899c8bf946c
+clusterStacks:
+  - name: tiny
+    buildImage:
+      image: registry.pivotal.io/tanzu-tiny-bionic-stack/build@sha256:7bd16e51b4809a8e90a655c7c9a0ca239a26d162c2fc3acdde13c93d52815ee8
+    runImage:
+      image: registry.pivotal.io/tanzu-tiny-bionic-stack/run@sha256:ed3fd7c99ba573a273fabbab52d81ef38f3c7a869133eb6e6fffd7dfe54a3467
+  - name: base
+    buildImage:
+      image: registry.pivotal.io/tanzu-base-bionic-stack/build@sha256:3c2e99e52b347f1abc547600cf4ff684c88558325d901fa333286a0e32c4cbdd
+    runImage:
+      image: registry.pivotal.io/tanzu-base-bionic-stack/run@sha256:4a464d8cba60f5c5c6885fa619ea6ce9d3201e1fb0684aaa1d4514b326006b22
+  - name: full
+    buildImage:
+      image: registry.pivotal.io/tanzu-full-bionic-stack/build@sha256:0388d284c7cd6bf2bbb1c86469f8e555ad583595f4765fc7b840735ec9b64ecb
+    runImage:
+      image: registry.pivotal.io/tanzu-full-bionic-stack/run@sha256:1aa1708004cf9d46d3d45de0d3b4fbfeb4400dd481e53407b21ec7025aa5b3ea
+clusterBuilders:
+  - name: base
+    clusterStack: base
+    clusterStore: default
+    order:
+      #- group:
+      #- id: tanzu-buildpacks/nodejs
+      - group:
+          - id: tanzu-buildpacks/go
+      - group:
+          - id: tanzu-buildpacks/python
+      - group:
+          - id: tanzu-buildpacks/nginx
+            #- group:
+            #- id: tanzu-buildpacks/java
+  - name: full
+    clusterStack: full
+    clusterStore: default
+    order:
+      #- group:
+      #- id: tanzu-buildpacks/dotnet-core
+      #- group:
+      # - id: tanzu-buildpacks/nodejs
+      - group:
+          - id: tanzu-buildpacks/go
+      - group:
+          - id: tanzu-buildpacks/python
+            #- group:
+            #- id: tanzu-buildpacks/php
+      - group:
+          - id: tanzu-buildpacks/nginx
+            #- group:
+            #- id: tanzu-buildpacks/httpd
+            #- group:
+            #- id: tanzu-buildpacks/java-native-image
+            #- group:
+            #- id: tanzu-buildpacks/java
+            #- group:
+            # - id: paketo-buildpacks/procfile
+  - name: tiny
+    clusterStack: tiny
+    clusterStore: default
+    order:
+      - group:
+          - id: tanzu-buildpacks/go
+            #- group:
+            #- id: tanzu-buildpacks/java-native-image
+            #- group:
+            #- id: paketo-buildpacks/procfile
