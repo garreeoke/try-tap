@@ -140,10 +140,13 @@ do
         info "HARBOR_SVC_IP: $HARBOR_SVC"
 done
 sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" manifests/registries.yaml
-# Restart k3sE
+sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" manifests/daemon.json
+cat manifests/daemon.json > /etc/docker/daemon.json
+# Restart k3sE and docker
 info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
 sudo systemctl restart k3s
+sudo systemctl restart docker
 sleep 5
 
 # Install TBS
