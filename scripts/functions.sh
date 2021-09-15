@@ -171,7 +171,20 @@ install_unzip () {
     info "Using apt-get to install unzip"
     sudo apt-get update && sudo apt-get install -y unzip
   else
-    error "ERROR: Unsupported OS! Cannot automatically install jq. Please try install jq first before rerunning this script"
+    error "ERROR: Unsupported OS! Cannot automatically install unzip. Please try install jq first before rerunning this script"
+    exit 2
+  fi
+fi
+}
+
+install_docker () {
+  if ! docker --help > /dev/null 2>&1; then
+  # only try installing if a Debian system
+  if apt-get -v > /dev/null 2>&1; then
+    info "Using apt-get to install docker"
+    sudo apt-get update && sudo apt-get install -y docker.io
+  else
+    error "ERROR: Unsupported OS! Cannot automatically install docker. Please try install jq first before rerunning this script"
     exit 2
   fi
 fi

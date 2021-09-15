@@ -30,6 +30,7 @@ install_kbld $KBLD_VERSION
 install_jq
 install_yq
 install_unzip
+install_docker
 install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
 install_helm
