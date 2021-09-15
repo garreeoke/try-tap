@@ -49,6 +49,15 @@ echo 'source <(kubectl completion bash)' >>~/.bashrc
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
 
+### Set LOCAL_EXTERNAL_IP
+LOCAL_EXTERNAL_IP=""
+while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
+do
+        sleep 1
+        LOCAL_EXTERNAL_IP=$(kubectl get svc traefik -n kube-system | grep traefik | awk '{print $4}')
+        echo "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
+done
+
 # Install kapp controller
 info "Installing kapp controller"
 kapp deploy --yes -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
@@ -118,17 +127,10 @@ kubectl create ns harbor
 helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.yaml
 # Wait for harbor service to have external ip and then change registries
 # May delete if not needed
-HARBOR_SVC=""
-while [ "$HARBOR_SVC" == "" ] || [ "$HARBOR_SVC" == "<pending>" ]
-do
-        echo "Waiting for harbor service ... cntrl-c if takes too long"
-        sleep 1
-        HARBOR_SVC=$(kubectl get svc harbor -n harbor | grep harbor | kubectl get svc harbor -n harbor | grep harbor | awk '{print $4}')
-        echo "HARBOR_SVC: $HARBOR_SVC"
-done
-sed -i "s/harbor.external.ip/$HARBOR_SVC/g" manifests/registries.yaml
-sed -i "s/harbor.external.ip/$HARBOR_SVC/g" values/harbor-values.yaml
-# Restart k3s
+
+sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" manifests/registries.yaml
+sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" values/harbor-values.yaml
+# Restart k3sE
 info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
 sudo systemctl restart k3s
@@ -137,17 +139,17 @@ sleep 5
 # Install TBS
 info "Installing Tanzu Build Service ..."
 # Login to local reg
-docker login "${HARBOR_SVC}:8085" -u admin -p 'Harbor12345'
+docker login "${LOCAL_EXTERNAL_IP}:8085" -u admin -p 'Harbor12345'
 # Login to pivotal reg
 docker login registry.pivotal.io -u $TANZU_NET_USER -p $TANZU_NET_PASSWORD
 # Copy image from piv to local
-info "Copying image from registry.pivotal.io/build-service/bundle:${TBS_VERSION} to ${HARBOR_SVC}:8085/library/build-service"
-imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-repo "${HARBOR_SVC}:8085/library/build-service"
+info "Copying image from registry.pivotal.io/build-service/bundle:${TBS_VERSION} to ${LOCAL_EXTERNAL_IP}:8085/library/build-service"
+imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-repo "${LOCAL_EXTERNAL_IP}:8085/library/build-service"
 # Download image from repo
-info "Pulling image from ${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}"
-imgpkg pull -b "${HARBOR_SVC}:8085/library/build-service:${TBS_VERSION}" -o /tmp/bundle
+info "Pulling image from ${LOCAL_EXTERNAL_IP}:8085/library/build-service:${TBS_VERSION}"
+imgpkg pull -b "${LOCAL_EXTERNAL_IP}:8085/library/build-service:${TBS_VERSION}" -o /tmp/bundle
 # Deploy
-ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${HARBOR_SVC}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' -v no_proxy=${HARBOR_SVC} | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y --wait-timeout 45m0s
+ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${LOCAL_EXTERNAL_IP}:8085/library/build-service" -v docker_username='admin' -v docker_password='Harbor12345' -v no_proxy=${LOCAL_EXTERNAL_IP} | kbld -f /tmp/bundle/.imgpkg/images.yml -f- | kapp deploy -a tanzu-build-service -f- -y --wait-timeout 45m0s
 # Don't know if needed yet
 kubectl apply -f manifests/roles.yaml
 # Have to get the output as there is a timeout ... so using dry-run-with-image-upload
@@ -160,8 +162,8 @@ echo "Done with installing TAP via try-tap ..."
 echo ""
 echo "Check out the tap components in your browser"
 echo "--------------------------------------------"
-echo "Accelerator: http://${HARBOR_SVC}:8081"
-echo "App Live View: https://${HARBOR_SVC}:5112"
-echo "Harbor: http://${HARBOR_SVC}:8085 user:admin password: Harbor12345"
+echo "Accelerator: http://${LOCAL_EXTERNAL_IP}:8081"
+echo "App Live View: https://${LOCAL_EXTERNAL_IP}:5112"
+echo "Harbor: http://${LOCAL_EXTERNAL_IP}:8085 user:admin password: Harbor12345"
 echo ""
 echo "Please try the guided demo at [link to go walk through]"
