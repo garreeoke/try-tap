@@ -125,7 +125,7 @@ install_tanzu_cli () {
 
 install_kp () {
     ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
-    wget -O kp --header="Authorization: Bearer $ACCESS_TOKEN" https://network.pivotal.io/api/v2/products/build-service/releases/925788/product_files/1000629/download
+    wget -O kp --header="Authorization: Bearer $ACCESS_TOKEN" "https://network.pivotal.io/api/v2/products/build-service/releases/$3/product_files/$4/download"
     sudo chmod +x ./kp
     sudo mv -f ./kp /usr/local/bin/kp
 }

@@ -12,8 +12,11 @@ YTT_VERSION="v0.36.0"
 IMGPKG_VERSION="v0.17.0"
 KBLD_VERSION="v0.30.0"
 KUBECTL_VERSION=v1.22.0
-TANZU_CLI_VERSION="v1.4.0" # Make an option
-TBS_VERSION="1.2.2"
+TANZU_CLI_VERSION="v1.4.0" # make an option
+# These will change ... hard to find ... automate?
+TANZU_CLI_RELEASE_NUMBER="941562"
+TANZU_CLI_PRODUCT_FILES_NUMBER="1040320"
+TBS_VERSION="1.2.2" # Make an option
 
 #TODO Checks for variables
 
@@ -32,9 +35,9 @@ install_yq
 install_unzip
 install_docker
 install_kubectl $KUBECTL_VERSION
-install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
+install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION" "$TANZU_CLI_RELEASE_NUMBER" "$TANZU_CLI_PRODUCT_FILES_NUMBER"
 install_helm
-install_kp "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION"
+install_kp "$TANZU_NET_REFRESH_TOKEN"
 
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
 
@@ -47,15 +50,15 @@ echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
 
 # Install kapp controller
-echo "Installing kapp controller"
+info "Installing kapp controller"
 kapp deploy --yes -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
 # Setup package repo
 kubectl create namespace tap-install
 kubectl create secret docker-registry tap-registry -n tap-install --docker-server='registry.pivotal.io' --docker-username=$TANZU_NET_USER --docker-password=$TANZU_NET_PASSWORD
 kapp deploy --yes -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml
+sleep 10
 tanzu package repository list -n tap-install
-
-rm -rf cli
+info "Done installing kapp controller"
 
 ## Install Cloud Native Runtimesl
 info "Installing CNR"
@@ -124,6 +127,7 @@ do
         echo "HARBOR_SVC: $HARBOR_SVC"
 done
 sed -i "s/harbor.external.ip/$HARBOR_SVC/g" manifests/registries.yaml
+sed -i "s/harbor.external.ip/$HARBOR_SVC/g" values/harbor-values.yaml
 # Restart k3s
 info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
