@@ -132,8 +132,14 @@ sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" values/harbor-values.yaml
 helm install tap-harbor harbor/harbor -n harbor --values values/harbor-values.yaml
 # Wait for harbor service to have external ip and then change registries
 # May delete if not needed
+HARBOR_SVC=""
+while [ "$HARBOR_SVC" == "" ] || [ "$HARBOR_SVC" == "<pending>" ]
+do
+        sleep 1
+        HARBOR_SVC=$(kubectl get svc harbor -n harbor | grep harbor | awk '{print $4}')
+        info "HARBOR_SVC_IP: $HARBOR_SVC"
+done
 sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" manifests/registries.yaml
-
 # Restart k3sE
 info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
