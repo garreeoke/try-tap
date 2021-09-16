@@ -154,7 +154,7 @@ while [ "$HARBOR_STATUS" != "OK" ]
 do
   sleep 1
   #HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $2}')
-  HARBOR_STATUS=$(curl http://${LOCAL_EXTERNAL_IP}:8085 | grep HTTP | awk '{print $2}')
+  HARBOR_STATUS=$(curl -I http://${LOCAL_EXTERNAL_IP}:8085 | grep HTTP | awk '{print $2}')
   info "HARBOR POD STATUS: $HARBOR_STATUS"
 done
 
