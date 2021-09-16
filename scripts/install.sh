@@ -147,7 +147,15 @@ info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
 sudo systemctl restart k3s
 sudo systemctl restart docker
-sleep 5
+
+# Check harbor core pod status
+HARBOR_STATUS=""
+while [ "$HARBOR_STATUS" != "Running" ]
+do
+  sleep 1
+  HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-core | awk '{print $3}')
+  info "HARBOR POD STATUS: $HARBOR_STATUS"
+done
 
 # Install TBS
 info "Installing Tanzu Build Service ..."
