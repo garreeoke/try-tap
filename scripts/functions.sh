@@ -110,16 +110,17 @@ install_kubectl () {
 }
 
 install_tanzu_cli () {
-  info "Installing tanzu cli $1 $2"
+  info "Installing tanzu cli $1"
   # Get access token
   ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
   # Issue here ... seems this URL changes over time ... may have to be able to find it
   wget -O tanzu-cli-bundle-linux-amd64.tar --header="Authorization: Bearer $ACCESS_TOKEN" "$1"
   tar -xvf tanzu-cli-bundle-linux-amd64.tar
   rm -f tanzu-cli-bundle-linux-amd64.tar
-  sudo install cli/core/v*/tanzu-core-linux_amd64 /usr/local/bin/tanzu
+  VERSION=$(ls cli/core | grep v)
+  sudo install cli/core/${VERSION}/tanzu-core-linux_amd64 /usr/local/bin/tanzu
   tanzu plugin clean
-  tanzu plugin install -v $2 --local cli package
+  tanzu plugin install -v $VERSION --local cli package
   tanzu package version
 }
 
