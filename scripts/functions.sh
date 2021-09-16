@@ -110,7 +110,7 @@ install_kubectl () {
 }
 
 install_tanzu_cli () {
-  info "Installing tanzu cli $1"
+  info "Installing tanzu cli $1 $2"
   # Get access token
   ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
   # Issue here ... seems this URL changes over time ... may have to be able to find it
@@ -125,7 +125,7 @@ install_tanzu_cli () {
 }
 
 install_kp () {
-    ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $1)" | jq '.access_token')
+    ACCESS_TOKEN=$(curl -X POST https://network.pivotal.io/api/v2/authentication/access_tokens -d "$(generate_token_data $2)" | jq '.access_token')
     wget -O kp --header="Authorization: Bearer $ACCESS_TOKEN" $1
     sudo chmod +x ./kp
     sudo mv -f ./kp /usr/local/bin/kp

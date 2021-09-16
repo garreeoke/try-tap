@@ -45,9 +45,9 @@ install_yq
 install_unzip
 install_docker
 install_kubectl $KUBECTL_VERSION
-install_tanzu_cli "$TANZU_CLI_URL"
+install_tanzu_cli "$TANZU_CLI_URL" "$TANZU_NET_REFRESH_TOKEN"
 install_helm
-install_kp "$TANZU_KP_URL"
+install_kp "$TANZU_KP_URL" "$TANZU_NET_REFRESH_TOKEN"
 
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
 
