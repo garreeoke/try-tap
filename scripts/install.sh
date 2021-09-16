@@ -19,7 +19,7 @@ KUBECTL_VERSION=v1.22.0
 # 2. Login and search for Tanzu Application Platform
 # 3. Select a release and click on tanzu-cli
 # 4. Click the "i" icon and copy the path in the "API Download" box and set TANZU_CLI_URL=to that
-TANZU_CLI_URL="https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1040323/download"
+TANZU_CLI_URL="https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1040320/download"
 # To Find TANZU_KP_URL
 # 1. Go to network.pivotal.io
 # 2. Login and search for Tanzu Build Service
