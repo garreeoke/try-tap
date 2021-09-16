@@ -162,6 +162,7 @@ sudo systemctl restart docker
 info "Installing Tanzu Build Service ..."
 # Login to local reg
 info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085"
+sleep 60
 HARBOR_LOGIN=$(sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login)
 info "Harbor Login Status: $HARBOR_LOGIN"
 while [ "$HARBOR_LOGIN" != "Login Succeeded" ]
