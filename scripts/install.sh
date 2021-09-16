@@ -180,16 +180,18 @@ sleep 2
 info "--- Installing Tanzu Build Service ---"
 # Login to local reg
 info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085"
-sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login 1> docker_login_output.txt
+docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login 1> docker_login_output.txt
 HARBOR_LOGIN_STATUS=$(cat docker_login_output.txt)
 info "Harbor Login Status: $HARBOR_LOGIN_STATUS"
 while [ "$HARBOR_LOGIN_STATUS" != "Login Succeeded" ]
 do
   info "Trying to login to harbor again"
   sleep 5
-  sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login 1> docker_login_output.txt
+  docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login 1> docker_login_output.txt
+  echo "."
   HARBOR_LOGIN_STATUS=$(cat docker_login_output.txt)
   info "Harbor Login Status: $HARBOR_LOGIN_STATUS"
+  echo "If this seems stuck ... press return "
 done
 # Login to pivotal reg
 info "Logging in to tanzu registry"
@@ -205,14 +207,19 @@ ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${LO
 # Don't know if needed yet
 kubectl apply -f manifests/roles.yaml
 # Have to get the output as there is a timeout ... so using dry-run-with-image-upload
-kp import -f manifests/descriptor.yaml --registry-verify-certs=false --dry-run-with-image-upload --output yaml > manifests/build-stuff.yaml
-if [ -s manifests/build-stuff.yaml ]; then
-  kubectl apply -f manifests/build-stuff.yaml
-  # Kp command to see builders
-  kp clusterbuilder list
-else
-  info "KP import failed"
-fi
+KP_IMPORT_STATUS="pending"
+while [ "$KP_IMPORT_STATUS" == "pending" ]
+do
+  kp import -f manifests/descriptor.yaml --registry-verify-certs=false --dry-run-with-image-upload --output yaml > manifests/build-stuff.yaml
+  if [ -s manifests/build-stuff.yaml ]; then
+    kubectl apply -f manifests/build-stuff.yaml
+    # Kp command to see builders
+    kp clusterbuilder list
+    KP_IMPORT_STATUS="completed"
+  else
+    info "KP import failed ... retrying"
+  fi
+done
 info "--- End Tanzu Build Service"
 echo ""
 sleep 2
@@ -220,6 +227,7 @@ sleep 2
 echo "Done with installing TAP via try-tap ..."
 echo ""
 echo "Check out the tap components in your browser"
+echo "You may have to replace IP address shown with different external IP depending on your setup"
 echo "--------------------------------------------"
 echo "Accelerator: http://${LOCAL_EXTERNAL_IP}:8081"
 echo "App Live View: https://${LOCAL_EXTERNAL_IP}:5112"

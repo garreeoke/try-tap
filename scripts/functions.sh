@@ -142,7 +142,7 @@ install_tanzu_cli () {
   tanzu plugin clean
   tanzu plugin install -v $VERSION --local cli package
   tanzu package version
-  info " --- Installing tanzu cli --- "
+  info " --- End tanzu cli --- "
   echo ""
   sleep 2
 }
