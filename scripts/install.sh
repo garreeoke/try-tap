@@ -98,6 +98,7 @@ sleep 60
 kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.healthCheckNodePort, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
+sed -i "s/port: 443/port: 6443/g" manifests/svc_envoy.yaml
 sleep 1
 sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
 sleep 1

@@ -43,7 +43,8 @@ function exec_kubectl_mutating() {
 
 install_k3s () {
   info "--- Installing K3s ---"
-  curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
+  #curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
+  curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --docker
   info "pausing for 10 seconds"
   sleep 10
   cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
