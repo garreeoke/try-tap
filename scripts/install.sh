@@ -150,10 +150,10 @@ sudo systemctl restart docker
 
 # Check harbor registry pod
 HARBOR_STATUS=""
-while [ "$HARBOR_STATUS" != "Running" ]
+while [ "$HARBOR_STATUS" != "1/1" ]
 do
   sleep 1
-  HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $3}')
+  HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $2}')
   info "HARBOR POD STATUS: $HARBOR_STATUS"
 done
 
