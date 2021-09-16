@@ -150,18 +150,18 @@ sudo systemctl restart docker
 
 # Check harbor registry pod
 HARBOR_STATUS=""
-while [ "$HARBOR_STATUS" != "2/2" ]
+while [ "$HARBOR_STATUS" != "OK" ]
 do
   sleep 1
-  HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $2}')
+  #HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $2}')
+  HARBOR_STATUS=$(curl http://${LOCAL_EXTERNAL_IP}:8085 | grep HTTP | awk '{print $2}')
   info "HARBOR POD STATUS: $HARBOR_STATUS"
 done
 
 # Install TBS
 info "Installing Tanzu Build Service ..."
-sleep 20
 # Login to local reg
-info "Logging in to harbor"
+info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085"
 docker login "${LOCAL_EXTERNAL_IP}:8085"
 # Login to pivotal reg
 info "Logging in to tanzu registry"
