@@ -36,6 +36,7 @@ TBS_VERSION="1.2.2" # Make an option
 info "Running tap setup for Linux"
 
 ### Installing tools
+info "--- Installing needed tools ---"
 install_kapp $KAPP_VERSION
 install_ytt $YTT_VERSION
 install_imgpkg $IMGPKG_VERSION
@@ -48,8 +49,10 @@ install_kubectl $KUBECTL_VERSION
 install_tanzu_cli "$TANZU_CLI_URL" "$TANZU_NET_REFRESH_TOKEN"
 install_helm
 install_kp "$TANZU_KP_URL" "$TANZU_NET_REFRESH_TOKEN"
-
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
+info "--- End installing tools ---"
+echo ""
+sleep 2
 
 ### Set up Kubernetes environment
 install_k3s
@@ -72,7 +75,7 @@ done
 sed -i "s/127.0.0.1/$LOCAL_EXTERNAL_IP/g" ~/.kube/config
 
 ### Install kapp controller
-info "Installing kapp controller"
+info "--- Installing kapp controller ---"
 kapp deploy --yes -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
 # Setup package repo
 kubectl create namespace tap-install
@@ -80,7 +83,9 @@ kubectl create secret docker-registry tap-registry -n tap-install --docker-serve
 kapp deploy --yes -a tap-package-repo -n tap-install -f ./manifests/tap-package-repo.yaml
 sleep 10
 tanzu package repository list -n tap-install
-info "Done installing kapp controller"
+info "--- End  kapp controller"
+echo ""
+sleep 2
 
 ## Install Cloud Native Runtimesl
 info "Installing CNR"
@@ -89,7 +94,6 @@ sleep 1
 sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/cnr-values.yaml
 sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
-info "waiting 60 seconds"
 sleep 60
 kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.healthCheckNodePort, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
 sleep 1
@@ -98,14 +102,20 @@ sleep 1
 sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
 sleep 1
 kubectl apply -f manifests/svc_envoy.yaml
-info "Check envoy error message"
+info "--- End Cloud Native Runtimes"
+echo ""
+sleep 2
 
 ## Install flux and app accelerator
-info "Installing flux"
+info "--- Installing Flux ---"
 kapp deploy --yes -a flux -f https://github.com/fluxcd/flux2/releases/download/v0.15.0/install.yaml
 sleep 1
 kubectl delete -n flux-system networkpolicies --all
-info "Installing app accelerator ..."
+info "--- End Flux ---"
+echo ""
+sleep 2
+
+info "--- Installing application accelerator ---"
 sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/app-accelerator-values.yaml
 sleep 1
 sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/app-accelerator-values.yaml
@@ -123,9 +133,11 @@ kubectl apply -f manifests/svc_accelerator.yaml
 sleep 1
 info "Installing sample accelerators ..."
 kubectl apply -f manifests/sample-accelerators-0.2.yaml
+info "--- End Application Accelerator ---"
+
 
 ## Install app live view
-info "Installing app live view ..."
+info "--- Installing Application Live View ---"
 sed -i "s/TANZU-NET-USER/$TANZU_NET_USER/g" values/app-live-view-values.yaml
 sleep 1
 sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/app-live-view-values.yaml
@@ -133,9 +145,12 @@ sleep 1
 tanzu package install app-live-view -p appliveview.tanzu.vmware.com -v 0.1.0 -n tap-install -f values/app-live-view-values.yaml
 sleep 1
 tanzu package installed list -n tap-install
+info "--- End Application Live View ---"
+echo ""
+sleep 2
 
 ## Install harbor
-info "Installing harbor ..."
+info "--- Installing Harbor ---"
 helm repo add harbor https://helm.goharbor.io
 kubectl create ns harbor
 sed -i "s/harbor.external.ip/$LOCAL_EXTERNAL_IP/g" values/harbor-values.yaml
@@ -157,22 +172,25 @@ info "Add insecure registry and restart"
 cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
 sudo systemctl restart k3s
 sudo systemctl restart docker
+info "--- End Harbor ---"
+echo ""
+sleep 2
 
 # Install TBS
-info "Installing Tanzu Build Service ..."
+info "--- Installing Tanzu Build Service ---"
 # Login to local reg
 info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085"
-sleep 60
-HARBOR_LOGIN=$(sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login)
-info "Harbor Login Status: $HARBOR_LOGIN"
-while [ "$HARBOR_LOGIN" != "Login Succeeded" ]
+sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login 1> docker_login_output.txt
+HARBOR_LOGIN_STATUS=$(cat docker_login_output.txt)
+info "Harbor Login Status: $HARBOR_LOGIN_STATUS"
+while [ "$HARBOR_LOGIN_STATUS" != "Login Succeeded" ]
 do
   info "Trying to login to harbor again"
   sleep 5
-  HARBOR_LOGIN=$(sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login)
-  info "Status: $HARBOR_LOGIN"
+  sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login 1> docker_login_output.txt
+  HARBOR_LOGIN_STATUS=$(cat docker_login_output.txt)
+  info "Harbor Login Status: $HARBOR_LOGIN_STATUS"
 done
-
 # Login to pivotal reg
 info "Logging in to tanzu registry"
 docker login registry.pivotal.io -u "$TANZU_NET_USER" -p "$TANZU_NET_PASSWORD"
@@ -195,6 +213,9 @@ if [ -s manifests/build-stuff.yaml ]; then
 else
   info "KP import failed"
 fi
+info "--- End Tanzu Build Service"
+echo ""
+sleep 2
 
 echo "Done with installing TAP via try-tap ..."
 echo ""
