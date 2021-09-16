@@ -159,6 +159,7 @@ done
 
 # Install TBS
 info "Installing Tanzu Build Service ..."
+sleep 20
 # Login to local reg
 info "Logging in to harbor"
 docker login "${LOCAL_EXTERNAL_IP}:8085"
