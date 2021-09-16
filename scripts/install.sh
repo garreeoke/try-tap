@@ -179,16 +179,15 @@ sleep 2
 # Install TBS
 info "--- Installing Tanzu Build Service ---"
 # Login to local reg
-info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085"
-docker login ${LOCAL_EXTERNAL_IP}:8085 1> docker_login_output.txt
-echo "If this seems stuck ... press return "
+info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085 ... if script seems to hang ... press return a couple times"
+docker login ${LOCAL_EXTERNAL_IP}:8085 -u "admin" -p "Harbor12345" 1> docker_login_output.txt
 HARBOR_LOGIN_STATUS=$(cat docker_login_output.txt | grep Login)
 info "Harbor Login Status: $HARBOR_LOGIN_STATUS"
 while [ "$HARBOR_LOGIN_STATUS" != "Login Succeeded" ]
 do
-  info "Trying to login to harbor again"
+  info "Trying to login to harbor again ... if script seems to hang ... press return a couple times"
   sleep 5
-  docker login ${LOCAL_EXTERNAL_IP}:8085 1> docker_login_output.txt
+  docker login ${LOCAL_EXTERNAL_IP}:8085 -u "admin" -p "Harbor12345" 1> docker_login_output.txt
   HARBOR_LOGIN_STATUS=$(cat docker_login_output.txt | grep Login)
   info "Harbor Login Status: $HARBOR_LOGIN_STATUS"
   echo "If this seems stuck ... press return "
