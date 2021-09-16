@@ -148,12 +148,12 @@ cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
 sudo systemctl restart k3s
 sudo systemctl restart docker
 
-# Check harbor core pod status
+# Check harbor registry pod
 HARBOR_STATUS=""
 while [ "$HARBOR_STATUS" != "Running" ]
 do
   sleep 1
-  HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-core | awk '{print $3}')
+  HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $3}')
   info "HARBOR POD STATUS: $HARBOR_STATUS"
 done
 
