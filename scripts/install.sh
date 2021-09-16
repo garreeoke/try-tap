@@ -1,21 +1,31 @@
 #!/bin/bash
 #set -e
 
-# TODO Setup args etc after it is working
-
-######## Script starts here
+### SET ENVIRONMENT VARIABLES
+# TANZU_NET_USER, TANZU_NET_PASSWORD, and TANZU_NET_REFRESH_TOKEN need to be exported from shell before executing this script
 KUBERNETES_CONTEXT=default
+# Namespace where tap install will be deployed
 NAMESPACE=tap-install
+# Log file
 OUT="./try-tap.log"
 KAPP_VERSION="v0.39.0"
 YTT_VERSION="v0.36.0"
 IMGPKG_VERSION="v0.17.0"
 KBLD_VERSION="v0.30.0"
 KUBECTL_VERSION=v1.22.0
-TANZU_CLI_VERSION="v1.4.0" # make an option
-# These will change ... hard to find ... automate?
-TANZU_CLI_RELEASE_NUMBER="941562"
-TANZU_CLI_PRODUCT_FILES_NUMBER="1040320"
+# TANZU VARIABLES TO DOWNLOAD STUFF
+# To Find TANZU_CLI_URL
+# 1. Go to network.pivotal.io
+# 2. Login and search for Tanzu Application Platform
+# 3. Select a release and click on tanzu-cli
+# 4. Click the "i" icon and copy the path in the "API Download" box and set TANZU_CLI_URL=to that
+TANZU_CLI_URL="https://network.pivotal.io/api/v2/products/tanzu-application-platform/releases/941562/product_files/1040323/download"
+# To Find TANZU_KP_URL
+# 1. Go to network.pivotal.io
+# 2. Login and search for Tanzu Build Service
+# 3. Select a release and click the "i" icon next to kp-linux and copy the path in the "API Download" box and set TANZU_KP_URL=to that
+TANZU_KP_URL="https://network.pivotal.io/api/v2/products/build-service/releases/925788/product_files/1000629/download"
+# TBS VERSON to use
 TBS_VERSION="1.2.2" # Make an option
 
 #TODO Checks for variables
@@ -35,9 +45,9 @@ install_yq
 install_unzip
 install_docker
 install_kubectl $KUBECTL_VERSION
-install_tanzu_cli "$TANZU_NET_REFRESH_TOKEN" "$TANZU_CLI_VERSION" "$TANZU_CLI_RELEASE_NUMBER" "$TANZU_CLI_PRODUCT_FILES_NUMBER"
+install_tanzu_cli "$TANZU_CLI_URL"
 install_helm
-install_kp "$TANZU_NET_REFRESH_TOKEN"
+install_kp "$TANZU_KP_URL"
 
 cfg_tanzu_net "$TANZU_NET_USER" "$TANZU_NET_PASSWORD"
 
@@ -148,24 +158,23 @@ cp manifests/registries.yaml /etc/rancher/k3s/registries.yaml
 sudo systemctl restart k3s
 sudo systemctl restart docker
 
-# Check harbor registry pod
-HARBOR_STATUS=""
-while [ "$HARBOR_STATUS" != "200" ]
-do
-  sleep 1
-  #HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $2}')
-  HARBOR_STATUS=$(curl -I http://${LOCAL_EXTERNAL_IP}:8085 | grep HTTP | awk '{print $2}')
-  info "HARBOR POD STATUS: $HARBOR_STATUS"
-done
-
 # Install TBS
 info "Installing Tanzu Build Service ..."
 # Login to local reg
 info "Logging in to harbor ${LOCAL_EXTERNAL_IP}:8085"
-docker login "${LOCAL_EXTERNAL_IP}:8085"
+HARBOR_LOGIN=$(sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login)
+info "Harbor Login Status: $HARBOR_LOGIN"
+while [ "$HARBOR_LOGIN" != "Login Succeeded" ]
+do
+  info "Trying to login to harbor again"
+  sleep 5
+  HARBOR_LOGIN=$(sudo docker login ${LOCAL_EXTERNAL_IP}:8085 | grep Login)
+  info "Status: $HARBOR_LOGIN"
+done
+
 # Login to pivotal reg
 info "Logging in to tanzu registry"
-docker login registry.pivotal.io -u $TANZU_NET_USER -p $TANZU_NET_PASSWORD
+docker login registry.pivotal.io -u "$TANZU_NET_USER" -p "$TANZU_NET_PASSWORD"
 # Copy image from piv to local
 info "Copying image from registry.pivotal.io/build-service/bundle:${TBS_VERSION} to ${LOCAL_EXTERNAL_IP}:8085/library/build-service"
 imgpkg copy -b "registry.pivotal.io/build-service/bundle:${TBS_VERSION}" --to-repo "${LOCAL_EXTERNAL_IP}:8085/library/build-service"
