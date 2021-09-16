@@ -27,20 +27,20 @@ To use try-tap, make sure your Linux instance meets the following requirements
     - 16GiB of RAM (32 if you can get it)
     - 20 GiB of HDD
     - Install curl, git, and tar (if not already installed)
-        `sudo apt-get install curl git tar`
+        - `sudo apt-get install curl git tar`
 
 ## Installation
 
 1. Clone the try-tap repo for the needed branch
-    `git clone https://github.com/garreeoke/try-tap.git -b beta1`
+   - `git clone https://github.com/garreeoke/try-tap.git -b beta1`
 2. Go to try-tap directory
 3. Export following variables
-    `export TANZU_NET_USER="[YOUR USER]"`
-    `export TANZU_NET_PASSWORD="[YOUR PASSWORD]"`
-    `export TANZU_NET_REFRESH_TOKEN="[YOUR REFRESH TOKEN]"`
+    - `export TANZU_NET_USER="[YOUR USER]"`
+    - `export TANZU_NET_PASSWORD="[YOUR PASSWORD]"`
+    - `export TANZU_NET_REFRESH_TOKEN="[YOUR REFRESH TOKEN]"`
         - This can be generated/found in your profile on Tanzu Network. This is the value from UAA API TOKEN
 4. Execute the install script, be sure to use sudo and -E to use the exported variables
-   `sudo -E scripts/install.sh`
+    - `sudo -E scripts/install.sh`
 5. Once the script completes, try access the URLs shown at the end of the script
 6. If you are on public cloud you may have to find your public ip address and open ports (80, 443, 5112, 6443,8080, 8081)
     - HTTP: 80, 5112, 8080, 8081
