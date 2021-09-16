@@ -150,7 +150,7 @@ sudo systemctl restart docker
 
 # Check harbor registry pod
 HARBOR_STATUS=""
-while [ "$HARBOR_STATUS" != "OK" ]
+while [ "$HARBOR_STATUS" != "200" ]
 do
   sleep 1
   #HARBOR_STATUS=$(kubectl get pods -n harbor | grep tap-harbor-registry | awk '{print $2}')
