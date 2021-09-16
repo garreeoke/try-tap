@@ -187,9 +187,13 @@ ytt -f /tmp/bundle/values.yaml -f /tmp/bundle/config/ -v docker_repository="${LO
 kubectl apply -f manifests/roles.yaml
 # Have to get the output as there is a timeout ... so using dry-run-with-image-upload
 kp import -f manifests/descriptor.yaml --registry-verify-certs=false --dry-run-with-image-upload --output yaml > manifests/build-stuff.yaml
-kubectl apply -f manifests/build-stuff.yaml
-# Kp command to see builders
-kp clusterbuilder list
+if [ -s manifests/build-stuff.yaml ]; then
+  kubectl apply -f manifests/build-stuff.yaml
+  # Kp command to see builders
+  kp clusterbuilder list
+else
+  info "KP import failed"
+fi
 
 echo "Done with installing TAP via try-tap ..."
 echo ""
