@@ -64,12 +64,12 @@ echo 'complete -F __start_kubectl k' >>~/.bashrc
 
 ### Set LOCAL_EXTERNAL_IP
 LOCAL_EXTERNAL_IP=""
-#while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
-#do
-#        sleep 1
-#        LOCAL_EXTERNAL_IP=$(kubectl get svc traefik -n kube-system | grep traefik | awk '{print $4}')
-#        info "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
-#done
+while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
+do
+        sleep 1
+        LOCAL_EXTERNAL_IP=$(kubectl get svc traefik -n kube-system | grep traefik | awk '{print $4}')
+        info "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
+done
 exit 0
 ### Change kubeconfig to use LOCAL_EXTERNAL_IP
 sed -i "s/127.0.0.1/$LOCAL_EXTERNAL_IP/g" ~/.kube/config
