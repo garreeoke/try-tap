@@ -105,7 +105,6 @@ sleep 60
 info "--- End Cloud Native Runtimes"
 echo ""
 sleep 2
-exit 0
 
 ## Install flux and app accelerator
 info "--- Installing Flux ---"

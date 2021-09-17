@@ -49,8 +49,8 @@ install_k3s () {
   sleep 10
   sudo cp -R /etc/rancher/k3s/k3s.yaml ~/.kube/config
   sudo chmod 644 ~/.kube/config
-  sudo cp manifests/traefik-config.yaml /var/lib/rancher/k3s/server/manifests/traefik-config.yaml
-  sudo systemctl restart k3s
+  #sudo cp manifests/traefik-config.yaml /var/lib/rancher/k3s/server/manifests/traefik-config.yaml
+  #sudo systemctl restart k3s
   info " --- END K3s --- "
   echo ""
   sleep 5
