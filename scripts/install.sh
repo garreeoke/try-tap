@@ -62,17 +62,6 @@ echo 'source <(kubectl completion bash)' >>~/.bashrc
 echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
 
-### Set LOCAL_EXTERNAL_IP
-LOCAL_EXTERNAL_IP=""
-while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
-do
-        sleep 1
-        LOCAL_EXTERNAL_IP=$(kubectl get svc envoy -n contour-external | grep envoy | awk '{print $4}')
-        info "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
-done
-### Change kubeconfig to use LOCAL_EXTERNAL_IP
-sed -i "s/127.0.0.1/$LOCAL_EXTERNAL_IP/g" ~/.kube/config
-
 ### Install kapp controller
 info "--- Installing kapp controller ---"
 kapp deploy --yes -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
@@ -94,6 +83,17 @@ sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/cnr-values.yaml
 sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 sleep 60
+
+### Set LOCAL_EXTERNAL_IP
+LOCAL_EXTERNAL_IP=""
+while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
+do
+        sleep 1
+        LOCAL_EXTERNAL_IP=$(kubectl get svc envoy -n contour-external | grep envoy | awk '{print $4}')
+        info "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
+done
+### Change kubeconfig to use LOCAL_EXTERNAL_IP
+sed -i "s/127.0.0.1/$LOCAL_EXTERNAL_IP/g" ~/.kube/config
 #kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.healthCheckNodePort, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
 #sleep 1
 #sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
