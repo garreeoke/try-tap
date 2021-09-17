@@ -47,8 +47,8 @@ install_k3s () {
   curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --docker
   info "pausing for 10 seconds"
   sleep 10
-  cp -R /etc/rancher/k3s/k3s.yaml ~/.kube/config
-  chmod 644 ~/.kube/config
+  sudo cp -R /etc/rancher/k3s/k3s.yaml ~/.kube/config
+  sudo chmod 644 ~/.kube/config
   info " --- END K3s --- "
   echo ""
   sleep 5
