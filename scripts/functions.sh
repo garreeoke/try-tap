@@ -44,11 +44,13 @@ function exec_kubectl_mutating() {
 install_k3s () {
   info "--- Installing K3s ---"
   #curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -
-  curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --docker #--disable traefik
+  curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --docker --disable traefik
   info "pausing for 10 seconds"
   sleep 10
   sudo cp -R /etc/rancher/k3s/k3s.yaml ~/.kube/config
   sudo chmod 644 ~/.kube/config
+  sudo cp manifests/traefik-config.yaml /var/lib/rancher/k3s/server/manifests/traefik-config.yaml
+  sudo systemctl restart k3s
   info " --- END K3s --- "
   echo ""
   sleep 5
