@@ -95,14 +95,14 @@ sed -i "s/TANZU-NET-PASSWORD/$TANZU_NET_PASSWORD/g" values/cnr-values.yaml
 sleep 1
 tanzu package install cloud-native-runtimes -p cnrs.tanzu.vmware.com -v 1.0.1 -n tap-install -f values/cnr-values.yaml --wait=false
 sleep 60
-kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.healthCheckNodePort, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
-sleep 1
-sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
-sed -i "s/port: 443/port: 9443/g" manifests/svc_envoy.yaml
-sleep 1
-sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
-sleep 1
-kubectl apply -f manifests/svc_envoy.yaml
+#kubectl get svc envoy -n contour-external -o yaml | yq eval 'del(.metadata.resourceVersion, .metadata.uid, .metadata.annotations, .metadata.creationTimestamp, .metadata.selfLink, .metadata.managedFields, .spec.healthCheckNodePort, .spec.clusterIP, .spec.clusterIPs, .spec.ports[0].nodePort, .spec.ports[1].nodePort)' - > manifests/svc_envoy.yaml
+#sleep 1
+#sed -i "s/port: 80/port: 8080/g" manifests/svc_envoy.yaml
+#sed -i "s/port: 443/port: 9443/g" manifests/svc_envoy.yaml
+#sleep 1
+#sed -i "s/ name: envoy/ name: envoy-8080/g" manifests/svc_envoy.yaml
+#sleep 1
+#kubectl apply -f manifests/svc_envoy.yaml
 info "--- End Cloud Native Runtimes"
 echo ""
 sleep 2
@@ -212,7 +212,7 @@ while [ "$KP_IMPORT_STATUS" == "pending" ]
 do
   kp import -f manifests/descriptor.yaml --registry-verify-certs=false --dry-run-with-image-upload --output yaml > manifests/build-stuff.yaml
   if [ -s manifests/build-stuff.yaml ]; then
-    kubectl apply -f manifests/build-stuff.yaml
+    kubectl create -f manifests/build-stuff.yaml
     # Kp command to see builders
     kp clusterbuilder list
     KP_IMPORT_STATUS="completed"
