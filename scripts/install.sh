@@ -67,7 +67,7 @@ LOCAL_EXTERNAL_IP=""
 while [ "$LOCAL_EXTERNAL_IP" == "" ] || [ "$LOCAL_EXTERNAL_IP" == "<pending>" ]
 do
         sleep 1
-        LOCAL_EXTERNAL_IP=$(kubectl get svc envoy -n contour-exteran | grep envoy | awk '{print $4}')
+        LOCAL_EXTERNAL_IP=$(kubectl get svc envoy -n contour-external | grep envoy | awk '{print $4}')
         info "LOCAL_EXTERNAL_IP: $LOCAL_EXTERNAL_IP"
 done
 ### Change kubeconfig to use LOCAL_EXTERNAL_IP
